@@ -27,11 +27,11 @@
                 </label>
 
                 <label>
-                    Nombre 
+                    Nombre
                     <input name="nombre" required maxlength="60">
                 </label>
                 <label>
-                 Apellido
+                    Apellido
                     <input name="apellido" required maxlength="60">
                 </label>
                 <label>
@@ -81,6 +81,47 @@
                         </tr>
                     </thead>
                     <tbody id="cuerpo-tabla"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Formulario para crear y editar departamentos -->
+        <section class="tarjeta">
+            <h2 id="titulo-formulario-departamento">Nuevo departamento</h2>
+
+            <form id="formulario-departamento" class="formulario">
+                <label>
+                    Nombre
+                    <input name="nombre" required maxlength="100">
+                </label>
+
+                <label>
+                    Ubicación
+                    <input name="ubicacion" maxlength="100">
+                </label>
+
+                <div class="acciones-formulario">
+                    <button type="submit" id="boton-guardar-departamento" class="boton-primario">Guardar</button>
+                    <button type="button" id="boton-cancelar-departamento" class="boton-secundario" hidden>Cancelar</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Lista de departamentos -->
+        <section class="tarjeta">
+            <h2>Departamentos</h2>
+
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Ubicación</th>
+                            <th class="numero">Cantidad de empleados</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-tabla-departamentos"></tbody>
                 </table>
             </div>
         </section>
