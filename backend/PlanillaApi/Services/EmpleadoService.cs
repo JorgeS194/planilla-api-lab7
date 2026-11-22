@@ -2,6 +2,7 @@
 using PlanillaApi.Data;
 using PlanillaApi.DTOs;
 using PlanillaApi.Models;
+using PlanillaApi.Exceptions;
 namespace PlanillaApi.Services
 {
     public class EmpleadoService : IEmpleadoService
@@ -37,6 +38,9 @@ namespace PlanillaApi.Services
 
         public async Task<EmpleadoDto> CrearAsync(GuardarEmpleadoDto dto)
         {
+            // Al crear no hay que excluir a nadie: ningún empleado existente tiene Id 0.
+            await ValidarReglasAsync(dto, idExcluir: 0);
+
             var empleado = new Empleado();
             CopiarDatos(dto, empleado);
 
@@ -52,8 +56,11 @@ namespace PlanillaApi.Services
             var empleado = await _contexto.Empleados.FindAsync(id);
             if (empleado is null)
             {
-                return false;
+                return false;   // Primero el 404: si el empleado no existe, no se valida nada más
             }
+
+            // Se excluye al propio empleado para que pueda conservar su misma cédula.
+            await ValidarReglasAsync(dto, idExcluir: id);
 
             CopiarDatos(dto, empleado);
             await _contexto.SaveChangesAsync();   // EF detecta qué cambió y genera el UPDATE
@@ -74,6 +81,31 @@ namespace PlanillaApi.Services
         }
 
         // ───────── Métodos privados de apoyo ─────────
+
+        // Reglas de negocio que comparten Crear y Actualizar.
+        // idExcluir: Id del empleado que se está editando (0 si es uno nuevo).
+        private async Task ValidarReglasAsync(GuardarEmpleadoDto dto, int idExcluir)
+        {
+            // Regla 1: el departamento debe existir -> 400
+            bool departamentoExiste = await _contexto.Departamentos
+                .AnyAsync(d => d.Id == dto.DepartamentoId);
+
+            if (!departamentoExiste)
+            {
+                throw new SolicitudInvalidaException("El departamento indicado no existe.");
+            }
+
+            // Regla 2: la cédula no puede pertenecer a OTRO empleado -> 409
+            string cedula = dto.Cedula.Trim();
+
+            bool cedulaRepetida = await _contexto.Empleados
+                .AnyAsync(e => e.Cedula == cedula && e.Id != idExcluir);
+
+            if (cedulaRepetida)
+            {
+                throw new ConflictoException("Ya existe un empleado con esa cédula.");
+            }
+        }
 
         // Crear y editar copian los mismos datos: se escribe una sola vez.
         private static void CopiarDatos(GuardarEmpleadoDto dto, Empleado empleado)
