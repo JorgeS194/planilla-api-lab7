@@ -21,6 +21,22 @@ export class ApiPlanilla {
         return this.#solicitar('/api/departamentos');
     }
 
+    obtenerDepartamento(id) {
+        return this.#solicitar(`/api/departamentos/${id}`);
+    }
+
+    crearDepartamento(datos) {
+        return this.#solicitar('/api/departamentos', 'POST', datos);
+    }
+
+    actualizarDepartamento(id, datos) {
+        return this.#solicitar(`/api/departamentos/${id}`, 'PUT', datos);
+    }
+
+    eliminarDepartamento(id) {
+        return this.#solicitar(`/api/departamentos/${id}`, 'DELETE');
+    }
+
     obtenerEmpleados() {
         return this.#solicitar('/api/empleados');
     }
