@@ -1,4 +1,9 @@
-﻿namespace PlanillaApi.DTOs
+namespace PlanillaApi.DTOs
 {
-    public record DepartamentoDto(int Id, string Nombre, string? Ubicacion);
+    // Datos que la API devuelve para un departamento.
+    public record DepartamentoDto(
+        int Id,
+        string Nombre,
+        string? Ubicacion,
+        int CantidadEmpleados);
 }
