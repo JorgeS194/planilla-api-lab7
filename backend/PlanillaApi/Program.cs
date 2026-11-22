@@ -1,13 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using PlanillaApi.Data;
 using PlanillaApi.Services;
+using PlanillaApi.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // REGISTRO DE SERVICIOS 
 
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+builder.Services.AddControllers(opciones => opciones.Filters.Add<FiltroExcepciones>()); builder.Services.AddOpenApi();
 
 // Respuestas de error con formato estándar (ProblemDetails).
 builder.Services.AddProblemDetails();
