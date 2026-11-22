@@ -1,0 +1,173 @@
+:root {
+    --color-primario: #1f4e79;
+    --color-primario-oscuro: #163a5a;
+    --color-fondo: #f4f6f9;
+    --color-borde: #d0d7de;
+    --color-texto: #1f2328;
+    --color-exito: #1a7f37;
+    --color-error: #cf222e;
+    --radio: 8px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* Garantiza que [hidden] oculte aunque otra regla defina display. */
+[hidden] {
+    display: none !important;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, "Segoe UI", sans-serif;
+    background: var(--color-fondo);
+    color: var(--color-texto);
+}
+
+.encabezado {
+    background: var(--color-primario);
+    color: white;
+    padding: 1rem 1.5rem;
+}
+
+.encabezado h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.contenedor {
+    max-width: 1100px;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+}
+
+.tarjeta {
+    background: white;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.tarjeta h2 {
+    margin-top: 0;
+    font-size: 1.2rem;
+}
+
+/* ───────── Formulario ───────── */
+
+.formulario {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.formulario label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.formulario input,
+.formulario select {
+    padding: 0.5rem;
+    border: 1px solid var(--color-borde);
+    border-radius: 6px;
+    font: inherit;
+    font-weight: normal;
+}
+
+.acciones-formulario {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* ───────── Botones ───────── */
+
+button {
+    padding: 0.5rem 1rem;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font: inherit;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.boton-primario {
+    background: var(--color-primario);
+    color: white;
+}
+
+.boton-primario:hover {
+    background: var(--color-primario-oscuro);
+}
+
+.boton-secundario {
+    background: white;
+    border-color: var(--color-borde);
+}
+
+.boton-peligro {
+    background: white;
+    border-color: var(--color-error);
+    color: var(--color-error);
+}
+
+/* ───────── Tabla ───────── */
+
+.tabla-contenedor {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 0.6rem;
+    border-bottom: 1px solid var(--color-borde);
+    text-align: left;
+    white-space: nowrap;
+}
+
+th {
+    background: var(--color-fondo);
+    font-size: 0.85rem;
+}
+
+.numero {
+    text-align: right;
+}
+
+td button {
+    padding: 0.3rem 0.7rem;
+    margin-right: 0.3rem;
+}
+
+/* ───────── Mensajes ───────── */
+
+.mensaje {
+    padding: 0.75rem 1rem;
+    border-radius: var(--radio);
+    margin: 0 0 1rem;
+}
+
+.mensaje-exito {
+    background: #dafbe1;
+    color: var(--color-exito);
+}
+
+.mensaje-error {
+    background: #ffebe9;
+    color: var(--color-error);
+}
