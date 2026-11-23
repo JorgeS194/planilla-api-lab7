@@ -1,6 +1,132 @@
-@PlanillaApi_HostAddress = http://localhost:5114
+@PlanillaApi_HostAddress = https://localhost:7001
+@departamentoConEmpleadosId = 1
+@departamentoDePruebaId = 5
+@idInexistente = 2147483647
+@empleadoId = 1
+@cedulaPropia = 8-123-456
+@cedulaOtroEmpleado = 8-234-567
+@cedulaNueva = 8-999-998
 
-GET {{PlanillaApi_HostAddress}}/weatherforecast/
+# Los IDs y cédulas iniciales corresponden a una base recién creada con PlanillaDb.sql.
+# Si ya tienes datos, consulta las listas y ajusta las variables antes de ejecutar.
+
+### 200. En la base inicial, Contabilidad tiene 2 empleados y Archivo tiene 0.
+GET {{PlanillaApi_HostAddress}}/api/departamentos
 Accept: application/json
 
-###
+### 200. Departamento existente con su cantidad de empleados.
+GET {{PlanillaApi_HostAddress}}/api/departamentos/{{departamentoConEmpleadosId}}
+Accept: application/json
+
+### 404. Consultar un departamento inexistente.
+GET {{PlanillaApi_HostAddress}}/api/departamentos/{{idInexistente}}
+
+### 201. Comprueba Location y copia el ID devuelto a departamentoDePruebaId.
+POST {{PlanillaApi_HostAddress}}/api/departamentos
+Content-Type: application/json
+
+{
+  "nombre": "Departamento de prueba",
+  "ubicacion": "Piso 4"
+}
+
+### 204. Editar el departamento creado en el paso anterior.
+PUT {{PlanillaApi_HostAddress}}/api/departamentos/{{departamentoDePruebaId}}
+Content-Type: application/json
+
+{
+  "nombre": "Departamento de prueba actualizado",
+  "ubicacion": "Piso 5"
+}
+
+### 404. Editar un departamento inexistente.
+PUT {{PlanillaApi_HostAddress}}/api/departamentos/{{idInexistente}}
+Content-Type: application/json
+
+{
+  "nombre": "Departamento inexistente"
+}
+
+### 204. Eliminar el departamento de prueba, que está vacío.
+DELETE {{PlanillaApi_HostAddress}}/api/departamentos/{{departamentoDePruebaId}}
+
+### 404. Eliminar un departamento inexistente.
+DELETE {{PlanillaApi_HostAddress}}/api/departamentos/{{idInexistente}}
+
+### 409. Eliminar un departamento con empleados. Comprueba el mensaje en detail.
+DELETE {{PlanillaApi_HostAddress}}/api/departamentos/{{departamentoConEmpleadosId}}
+Accept: application/json
+
+### 200. Consulta de apoyo para confirmar IDs, cédulas y departamentos de empleados.
+GET {{PlanillaApi_HostAddress}}/api/empleados
+Accept: application/json
+
+### 409. Crear un empleado con una cédula existente. Comprueba detail.
+POST {{PlanillaApi_HostAddress}}/api/empleados
+Content-Type: application/json
+
+{
+  "cedula": "{{cedulaPropia}}",
+  "nombre": "Prueba",
+  "apellido": "Equipo",
+  "cargo": "Asistente",
+  "fechaIngreso": "2026-01-15",
+  "salarioBase": 1000.00,
+  "departamentoId": {{departamentoConEmpleadosId}}
+}
+
+### 409. Editar un empleado con la cédula de otro. Comprueba detail.
+PUT {{PlanillaApi_HostAddress}}/api/empleados/{{empleadoId}}
+Content-Type: application/json
+
+{
+  "cedula": "{{cedulaOtroEmpleado}}",
+  "nombre": "Ana",
+  "apellido": "Gómez",
+  "cargo": "Contadora",
+  "fechaIngreso": "2023-03-01",
+  "salarioBase": 1500.00,
+  "departamentoId": {{departamentoConEmpleadosId}}
+}
+
+### 204. Editar un empleado conservando su propia cédula.
+PUT {{PlanillaApi_HostAddress}}/api/empleados/{{empleadoId}}
+Content-Type: application/json
+
+{
+  "cedula": "{{cedulaPropia}}",
+  "nombre": "Ana",
+  "apellido": "Gómez",
+  "cargo": "Contadora",
+  "fechaIngreso": "2023-03-01",
+  "salarioBase": 1500.00,
+  "departamentoId": {{departamentoConEmpleadosId}}
+}
+
+### 400. Crear un empleado con un departamento inexistente. Comprueba detail.
+POST {{PlanillaApi_HostAddress}}/api/empleados
+Content-Type: application/json
+
+{
+  "cedula": "{{cedulaNueva}}",
+  "nombre": "Prueba",
+  "apellido": "Equipo",
+  "cargo": "Asistente",
+  "fechaIngreso": "2026-01-15",
+  "salarioBase": 1000.00,
+  "departamentoId": {{idInexistente}}
+}
+
+### 400. Editar un empleado con un departamento inexistente. Comprueba detail.
+PUT {{PlanillaApi_HostAddress}}/api/empleados/{{empleadoId}}
+Content-Type: application/json
+
+{
+  "cedula": "{{cedulaPropia}}",
+  "nombre": "Ana",
+  "apellido": "Gómez",
+  "cargo": "Contadora",
+  "fechaIngreso": "2023-03-01",
+  "salarioBase": 1500.00,
+  "departamentoId": {{idInexistente}}
+}

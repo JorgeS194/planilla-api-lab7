@@ -5,7 +5,7 @@ GO
 USE PlanillaDb;
 GO
 
-IF OBJECT_ID('dbo.Departamentos') IS NULL
+IF OBJECT_ID(N'dbo.Departamentos', N'U') IS NULL
 CREATE TABLE dbo.Departamentos (
     Id        INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Departamentos PRIMARY KEY,
     Nombre    NVARCHAR(100) NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE dbo.Departamentos (
 );
 GO
 
-IF OBJECT_ID('dbo.Empleados') IS NULL
+IF OBJECT_ID(N'dbo.Empleados', N'U') IS NULL
 CREATE TABLE dbo.Empleados (
     Id             INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Empleados PRIMARY KEY,
     Cedula         NVARCHAR(20)  NOT NULL,
@@ -25,15 +25,22 @@ CREATE TABLE dbo.Empleados (
     DepartamentoId INT           NOT NULL,
     CONSTRAINT UQ_Empleados_Cedula UNIQUE (Cedula),
     CONSTRAINT FK_Empleados_Departamentos
-        FOREIGN KEY (DepartamentoId) REFERENCES dbo.Departamentos (Id)
+        FOREIGN KEY (DepartamentoId) REFERENCES dbo.Departamentos (Id) ON DELETE NO ACTION
 );
 GO
 
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Empleados_DepartamentoId')
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes
+    WHERE object_id = OBJECT_ID(N'dbo.Empleados', N'U')
+      AND name = N'IX_Empleados_DepartamentoId'
+)
     CREATE INDEX IX_Empleados_DepartamentoId ON dbo.Empleados (DepartamentoId);
 GO
 
--- Datos de prueba (solo si la tabla está vacía)
+-- Cargar los datos de prueba juntos en una base nueva.
+SET XACT_ABORT ON;
+BEGIN TRANSACTION;
+
 IF NOT EXISTS (SELECT 1 FROM dbo.Departamentos)
 BEGIN
     INSERT INTO dbo.Departamentos (Nombre, Ubicacion) VALUES
@@ -52,4 +59,6 @@ BEGIN
         (N'8-345-678', N'María', N'Rodríguez', N'Analista de RRHH', '2022-07-10', 1300.00, @rrhh),
         (N'8-456-789', N'Carlos', N'Díaz',    N'Desarrollador',  '2021-11-05', 1800.00, @tec);
 END
+
+COMMIT TRANSACTION;
 GO
