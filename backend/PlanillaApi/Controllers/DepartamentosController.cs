@@ -37,6 +37,7 @@ namespace PlanillaApi.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(DepartamentoDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<ActionResult<DepartamentoDto>> Crear(GuardarDepartamentoDto dto)
         {
             var creado = await _servicio.CrearAsync(dto);
@@ -48,6 +49,7 @@ namespace PlanillaApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> Actualizar(int id, GuardarDepartamentoDto dto)
         {
             bool actualizado = await _servicio.ActualizarAsync(id, dto);

@@ -44,8 +44,22 @@ namespace PlanillaApi.Services
             var departamento = new Departamento();
             CopiarDatos(dto, departamento);
 
+            // No permitir otro departamento con el mismo nombre.
+            await ValidarNombreUnicoAsync(departamento.Nombre, 0);
+
             _contexto.Departamentos.Add(departamento);
-            await _contexto.SaveChangesAsync();
+            try
+            {
+                await _contexto.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex) when (
+                ex.InnerException is SqlException sql &&
+                (sql.Number == 2601 || sql.Number == 2627))
+            {
+                // Protege también si SQL Server tiene una restricción UNIQUE.
+                throw new ConflictoException(
+                    "Ya existe un departamento con ese nombre.");
+            }
 
             return new DepartamentoDto(
                 departamento.Id, departamento.Nombre, departamento.Ubicacion, 0);
@@ -61,7 +75,22 @@ namespace PlanillaApi.Services
             }
 
             CopiarDatos(dto, departamento);
-            await _contexto.SaveChangesAsync();
+
+            // Excluimos el mismo ID para permitir conservar su propio nombre.
+            await ValidarNombreUnicoAsync(departamento.Nombre, id);
+
+            try
+            {
+                await _contexto.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex) when (
+                ex.InnerException is SqlException sql &&
+                (sql.Number == 2601 || sql.Number == 2627))
+            {
+                throw new ConflictoException(
+                    "Ya existe un departamento con ese nombre.");
+            }
+
             return true;
         }
 
@@ -99,6 +128,23 @@ namespace PlanillaApi.Services
             }
 
             return true;
+        }
+
+        // Evita nombres duplicados al crear o editar departamentos.
+        // No compara Ubicacion: varios departamentos pueden compartirla.
+        private async Task ValidarNombreUnicoAsync(string nombre, int idExcluir)
+        {
+            string nombreNormalizado = nombre.Trim().ToUpperInvariant();
+
+            bool nombreRepetido = await _contexto.Departamentos
+                .AnyAsync(d => d.Id != idExcluir &&
+                    d.Nombre.Trim().ToUpper() == nombreNormalizado);
+
+            if (nombreRepetido)
+            {
+                throw new ConflictoException(
+                    "Ya existe un departamento con ese nombre.");
+            }
         }
 
         // Validaciones adicionales para que los datos sean correctos
