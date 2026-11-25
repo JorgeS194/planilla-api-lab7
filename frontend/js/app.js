@@ -1,7 +1,7 @@
 import { ApiPlanilla } from './apiPlanilla.js';
 
 // Dirección de la API (perfil https en launchSettings.json).
-const URL_API = 'https://localhost:9001';
+const URL_API = 'https://localhost:7001';
 
 // ───────── Funciones de formato ─────────
 
